@@ -41,7 +41,7 @@ const FlashcardGeneratorPage = () => {
   }, [arrangement, cards]);
 
   return (
-    <div className="container mx-auto px-32 py-8">
+    <div className="container mx-auto px-32 py-20">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold mb-4">Generated Flashcards</h1>
         <Button

@@ -127,7 +127,7 @@ const AddNewComponent = () => {
 
   return (
     <>
-      <div className="h-[100svh] w-screen relative">
+      <div className="min-h-[100svh] w-screen relative">
         <div className="absolute inset-0 z-0 flex flex-col justify-center items-center">
           <div className="w-full h-[40%] bg-gray-50" />
           <div className="w-full h-[60%] bg-gray-100" />
@@ -162,7 +162,7 @@ const AddNewComponent = () => {
                 Generate
               </Button>
               <Button
-                color="danger"
+                color="warning"
                 startContent={<IoReload />}
                 onClick={handleReset}
                 isDisabled={!file}
@@ -219,11 +219,12 @@ const AddNewComponent = () => {
             </Modal>
 
             {(currentTab === "document" || currentTab === "image") && (
-              <Card className="w-full">
+              <Card className="w-full cursor-pointer">
                 <CardBody
-                  className="p-0 flex justify-center items-center"
+                  className="p-0 flex justify-center items-center border-4 border-dashed border-gray-300 rounded-lg bg-blue-50"
                   onDrop={handleDrop}
                   onDragOver={(e) => e.preventDefault()}
+                  onClick={triggerFileInput}
                 >
                   {preview ? (
                     currentTab === "document" ? (
@@ -255,25 +256,18 @@ const AddNewComponent = () => {
                         ref={fileInputRef}
                         id="fileUpload"
                       />
-                      <label
-                        htmlFor="fileUpload"
-                        className="flex flex-col items-center gap-3"
-                      >
+                      <div className="flex flex-col items-center gap-3 cursor-pointer">
                         {currentTab === "document" ? (
-                          <GoFile color="gray" size={"4rem"} />
+                          <GoFile color="gray" size={"6rem"} />
                         ) : (
-                          <GoImage color="gray" size={"4rem"} />
+                          <GoImage color="gray" size={"6rem"} />
                         )}
-                        <span>
+                        <span className="text-2xl">
                           {currentTab.toLowerCase() === "document"
-                            ? "Drag a file here"
-                            : "Drag an image here"}
+                            ? "Drag a file here or click to upload"
+                            : "Drag an image here or click to upload"}
                         </span>
-                        <span>- OR -</span>
-                        <Button fullWidth onClick={triggerFileInput}>
-                          Upload File
-                        </Button>
-                      </label>
+                      </div>
                     </>
                   )}
                 </CardBody>
