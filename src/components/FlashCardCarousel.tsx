@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@nextui-org/react";
-import { IoChevronBackCircleOutline, IoChevronForwardCircleOutline } from "react-icons/io5";
+import {
+  IoChevronBackCircleOutline,
+  IoChevronForwardCircleOutline,
+} from "react-icons/io5";
 
 interface CardDisplay {
   question: string;
@@ -10,21 +13,24 @@ interface CardDisplay {
 
 interface FlashCardCarouselProps {
   cards: CardDisplay[];
+  currentIndex: number;
+  setCurrentIndex: (index: number) => void;
 }
 
-const FlashCardCarousel: React.FC<FlashCardCarouselProps> = ({ cards }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+const FlashCardCarousel: React.FC<FlashCardCarouselProps> = ({
+  cards,
+  currentIndex,
+  setCurrentIndex,
+}) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % cards.length);
+    setCurrentIndex((currentIndex + 1) % cards.length);
     setIsFlipped(false);
   };
 
   const handlePrev = () => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + cards.length) % cards.length
-    );
+    setCurrentIndex((currentIndex - 1 + cards.length) % cards.length);
     setIsFlipped(false);
   };
 
@@ -58,9 +64,11 @@ const FlashCardCarousel: React.FC<FlashCardCarouselProps> = ({ cards }) => {
           size="lg"
           className="bg-transparent"
           onClick={handlePrev}
-          startContent={<IoChevronBackCircleOutline size={50} color="lightblue" />}
+          startContent={
+            <IoChevronBackCircleOutline size={50} color="lightblue" />
+          }
         />
-        <div className="w-10 text-center">
+        <div className="w-20 text-center">
           {currentIndex + 1} / {cards.length}
         </div>
         <Button
@@ -68,7 +76,9 @@ const FlashCardCarousel: React.FC<FlashCardCarouselProps> = ({ cards }) => {
           size="lg"
           className="bg-transparent"
           onClick={handleNext}
-          startContent={<IoChevronForwardCircleOutline size={50} color="lightblue" />}
+          startContent={
+            <IoChevronForwardCircleOutline size={50} color="lightblue" />
+          }
         />
       </div>
     </div>

@@ -19,7 +19,10 @@ import { GoFile, GoImage } from "react-icons/go";
 import { IoReload } from "react-icons/io5";
 import { MdOutlineDone } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { useFlashcardStore } from "@/app/flashcard-generator/flashcardStore";
+import {
+  useFlashcardStore,
+  useJsonDataStore,
+} from "@/app/flashcard-generator/flashcardStore";
 
 interface CardDisplay {
   question: string;
@@ -36,10 +39,13 @@ const AddNewComponent = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<string | null>(null);
 
+  // console.log("result", result);
+
   const [currentTab, setCurrentTab] = useState("document");
 
   const router = useRouter();
   const setCards = useFlashcardStore((state) => state.setCards);
+  const setJsonData = useJsonDataStore((state) => state.setJsonData);
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -113,6 +119,9 @@ const AddNewComponent = () => {
         setIsError(false);
         setErrorMsg("");
 
+        // Set the original JSON data in the store
+        setJsonData(result);
+
         // Set the cards in the store
         setCards(parsedResult);
 
@@ -121,6 +130,7 @@ const AddNewComponent = () => {
       } catch (e) {
         setIsError(true);
         setErrorMsg("The " + currentTab + " could not be processed.");
+        console.error("Error parsing result:", e);
       }
     }
   }, [result, currentTab, router, setCards]);
@@ -185,7 +195,7 @@ const AddNewComponent = () => {
             >
               <ModalContent>
                 <ModalBody>
-                  <Spinner label="Loading..." size="lg" />
+                  <Spinner label="Generating..." size="lg" />
                 </ModalBody>
               </ModalContent>
             </Modal>
@@ -221,7 +231,9 @@ const AddNewComponent = () => {
             {(currentTab === "document" || currentTab === "image") && (
               <Card className="w-full cursor-pointer">
                 <CardBody
-                  className="p-0 flex justify-center items-center border-4 border-dashed border-gray-300 rounded-lg bg-blue-50"
+                  className={`${
+                    !preview && "border-4 border-dashed border-gray-300"
+                  } p-0 flex justify-center items-center rounded-lg bg-blue-50`}
                   onDrop={handleDrop}
                   onDragOver={(e) => e.preventDefault()}
                   onClick={triggerFileInput}

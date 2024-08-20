@@ -1,7 +1,7 @@
 "use client";
 
 import NewFlashCardComponent from "@/components/NewFlashCard";
-import { useFlashcardStore } from "../flashcardStore";
+import { useFlashcardStore, useJsonDataStore } from "../flashcardStore";
 import FlashCardCarousel from "@/components/FlashCardCarousel";
 import { Button, Card, CardBody, Spacer, Tab, Tabs } from "@nextui-org/react";
 import { SlPrinter } from "react-icons/sl";
@@ -11,12 +11,23 @@ import { Key, useState, useEffect } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
 
+import { firestoreDb } from "@/app/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
+
 const FlashcardGeneratorPage = () => {
   const cards = useFlashcardStore((state) => state.cards);
+  const jsonData = useJsonDataStore((state) => state.jsonData);
   const [arrangement, setArrangement] = useState("chronological");
   const [displayedCards, setDisplayedCards] = useState(cards);
+  const [currentIndexCarousel, setCurrentIndexCarousel] = useState(0);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (cards === null || cards.length === 0) {
+      router.push("/flashcard-generator");
+    }
+  }, [cards, router]);
 
   const shuffleArray = (array: any[]) => {
     return array
@@ -35,10 +46,33 @@ const FlashcardGeneratorPage = () => {
   useEffect(() => {
     if (arrangement === "random") {
       setDisplayedCards(shuffleArray(cards));
+      setCurrentIndexCarousel(0);
     } else {
       setDisplayedCards(cards);
+      setCurrentIndexCarousel(0);
     }
   }, [arrangement, cards]);
+
+  // console.log("cards", cards);
+  // console.log("jsonData", jsonData);
+
+  async function saveDataToFirestore() {
+    try {
+      const title = window.prompt("Enter the title:");
+      if (!title) {
+        console.error("Title is required");
+        return;
+      }
+
+      const docRef = await addDoc(collection(firestoreDb, "flashcards"), {
+        title: title,
+        jsonData: jsonData,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
 
   return (
     <div className="container mx-auto px-32 py-20">
@@ -54,7 +88,11 @@ const FlashcardGeneratorPage = () => {
         </Button>
       </div>
       <div className="px-64">
-        <FlashCardCarousel cards={displayedCards} />
+        <FlashCardCarousel
+          cards={displayedCards}
+          currentIndex={currentIndexCarousel}
+          setCurrentIndex={setCurrentIndexCarousel}
+        />
         <Card className="mt-10 mb-7">
           <CardBody>
             <div className="w-full flex justify-between items-center px-3">
@@ -94,6 +132,13 @@ const FlashcardGeneratorPage = () => {
                 <Tab key="chronological" title="Chronological" />
                 <Tab key="random" title="Random" />
               </Tabs>
+            </div>
+            <Spacer y={4} />
+            <div className="w-full flex justify-between items-center px-3">
+              <h3>Save Flashcard</h3>
+              <Button color="secondary" onClick={saveDataToFirestore}>
+                Save
+              </Button>
             </div>
           </CardBody>
         </Card>

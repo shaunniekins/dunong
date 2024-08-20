@@ -18,6 +18,9 @@ const MainHeader = () => {
               <Link href="/" color="foreground" className="">
                 Home
               </Link>
+              <Link href="/library" color="foreground">
+                Library
+              </Link>
               <Link href="/flashcard-generator" color="foreground">
                 AI Flashcard Generator
               </Link>
